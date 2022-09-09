@@ -1,5 +1,7 @@
 'use strict';
 var crypto = require('crypto');
+const axios = require('axios').default;
+
 module.exports = {
   /**
    * An asynchronous register function that runs before
@@ -16,7 +18,7 @@ module.exports = {
    * This gives you an opportunity to set up your data model,
    * run jobs, or perform some special logic.
    */
-  bootstrap(/*{ strapi }*/) {
+  async bootstrap(/*{ strapi }*/) {
 
 
     let iPayTransact = "https://apis.ipayafrica.com/payments/v2/transact";
@@ -24,8 +26,13 @@ module.exports = {
     let iPayTransactMobile = "https://apis.ipayafrica.com/payments/v2/transact";
     let iPayQueryTransaction = "https://apis.ipayafrica.com/payments/v2/transaction/search";
     let iPayRefund = "https://apis.ipayafrica.com/payments/v2/transaction/refund";
+    let iPaySecret = strapi.config.get('server.ipaysecret', 'demoCHANGED');
+    let iPayVid = strapi.config.get('server.ipayvid', 'demo');
+    let iPayAlgorithm = "sha256"
 
     function prepare_stk_data(order_id, amount, customer_phone, customer_email, customer_notifications = 0) {
+
+
       let iPayData = {
         "live": 0,
         "oid": order_id,
@@ -46,23 +53,25 @@ module.exports = {
       }
 
       // The hash digital signature hash of the data for verification.
-      hashCode = `${iPayData['live']}${iPayData['oid']}${iPayData['inv']}${iPayData['amount']}${iPayData['tel']}${iPayData['eml']}${iPayData['vid']}${iPayData['curr']}${iPayData['p1']}${iPayData['p2']}${iPayData['p3']}${iPayData['p4']}${iPayData['cst']}${iPayData['cbk']}`
+      let hashCode = `${iPayData['live']}${iPayData['oid']}${iPayData['inv']}${iPayData['amount']}${iPayData['tel']}${iPayData['eml']}${iPayData['vid']}${iPayData['curr']}${iPayData['p1']}${iPayData['p2']}${iPayData['p3']}${iPayData['p4']}${iPayData['cst']}${iPayData['cbk']}`
 
 
-      let iPaySecret = strapi.config.get('server.ipaysecret', 'demoCHANGED');
       //creating hmac object 
-      let data = crypto.createHmac('sha256', iPaySecret).update(iPayData).digest('hex');
-      iPayData['hash'] = data;
+      let hash = crypto.createHmac(iPayAlgorithm, iPaySecret).update(hashCode).digest("hex");
+      
+      iPayData['hash'] = hash;
       return iPayData;
 
     }
 
     async function initateSTKTransaction(order_id, customer_tel, customer_email, amount, send_receipt = 0) {
       let data = prepare_stk_data(order_id, amount, customer_tel,
-        customer_email, customer_notifications = send_receipt);
+        customer_email, send_receipt);
 
       try {
 
+
+        
         let response = await axios({
           method: 'post',
           url: iPayTransact,
@@ -74,54 +83,64 @@ module.exports = {
 
         response.data.tel = data.tel;
         response.data.vid = data.vid;
-        console.log(response.data);
-        return response.data
+        console.log(response.data)
+        return response.data;
       } catch (e) {
-        console.log(e);
+    
         return null;
       }
     }
+    
 
+  
 
-    async function sendSTK(params) {
+    async function sendSTK(order_id, customer_telephone, customer_email, amount) {
       try {
 
+        let init_response = await initateSTKTransaction(order_id, customer_telephone, customer_email, amount);
 
-        let hash, hmac;
-        hmac = crypto.createHmac(iPayAlgorithm, iPaySecret);
-        let hashCode = `${tel}${vid}${sid}`;
-        hmac.write(hashCode); // write in to the stream
-        hmac.end();       // can't read from the stream until you call end()
-        hash = hmac.read().toString('hex');    // read out hmac digest
+        
+        if (init_response.status == 1) {
+          console.log(init_response)
 
-        let phone = tel;
-        let stkData = {
-          phone,
-          sid,
-          vid,
-          hash: hash
-        }
+          let hashCode = `${customer_telephone}${init_response.vid}${init_response.data.sid}`;
+          let hash = crypto.createHmac(iPayAlgorithm, iPaySecret).update(hashCode).digest("hex");
 
-        let response = await axios({
-          method: 'post',
-          url: iPayMpesa,
-          data: JSON.stringify(stkData),
-          headers: {
-            "Content-type": "application/json"
+          let stkData = {
+            phone: customer_telephone,
+            sid: init_response.data.sid,
+            vid: init_response.vid,
+            hash: hash
           }
-        });
 
-        return response.data;
+          console.log(JSON.stringify(stkData))
+
+          let response = await axios({
+            method: 'post',
+            url: iPayMpesa,
+            data: JSON.stringify(stkData),
+            headers: {
+              "Content-type": "application/json"
+            }
+          });
+
+          
+          return response.data;
+        }  
+        
+        return null;
+
 
       } catch (error) {
         console.log(error);
         return null;
       }
     }
+
     async function checkTransactionStatus(order_id) {
-      let iPayVid = strapi.config.get('server.ipayvid', 'demo');
+
       let hashData = `${order_id}${iPayVid}`
-      let hash = crypto.createHmac('sha256', iPaySecret).update(hashData).digest('hex');
+      let hash = crypto.createHmac(iPayAlgorithm, iPaySecret).update(hashData).digest('hex');
 
       let data = {
         "oid": order_id,
