@@ -1,39 +1,23 @@
 <template>
     <div>
         <div>
-            Book Details
-            {{this.book}}
+            <h3>{{this.book.name}} </h3>
+        </div>
+        <div>
+            <h3>Price: KES {{this.book.price}} </h3>
+        </div>
+
+        <div>
+            <span>The Digital book will be sent to {{this.auth.email}}.</span>
         </div>
         <div class="col-md-8 order-md-1">
-            <form class="needs-validation" novalidate="">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="firstName">First name</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="" value="" required="">
-                        <div class="invalid-feedback">
-                            Valid first name is required.
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="lastName">Last name</label>
-                        <input type="text" class="form-control" id="lastName" placeholder="" value="" required="">
-                        <div class="invalid-feedback">
-                            Valid last name is required.
-                        </div>
-                    </div>
-                </div>
+            <form @submit.prevent="submit">
 
-                <div class="mb-3">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="you@example.com">
-                    <div class="invalid-feedback">
-                        Please enter a valid email address for shipping updates.
-                    </div>
-                </div>
 
                 <div class="mb-3">
                     <label for="address">Phone Number</label>
-                    <input type="text" class="form-control" id="address" placeholder="2547XXXXXXXX" required="">
+                    <input type="text" class="form-control" id="address" placeholder="2547XXXXXXXX" v-model="form.phone"
+                        required="">
                     <div class="invalid-feedback">
                         Please enter your shipping address.
                     </div>
@@ -47,14 +31,36 @@
     </div>
 </template>
 <script>
+import { mapActions } from "vuex";
 export default {
     name: "CheckoutComponent",
-    props: ['book'],
-    methods: {
-
+    props: ['book', 'book_id'],
+    data() {
+        return {
+            form: {
+                
+                phone: "",
+                book: this.book_id,
+            }
+        }
     },
-    created(){
-        console.log(this.book);
+    methods: {
+        ...mapActions(["makePurchase"]),
+        async submit() {
+            console.log(this.form);
+            try {
+                let result = await this.makePurchase(this.form);
+
+                this.$router.push(`/sale/${result.id}`) 
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    },
+    computed: {
+        auth() {
+            return this.$store.getters.getAuth;
+        }
     }
 
 

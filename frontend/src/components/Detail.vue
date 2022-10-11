@@ -1,14 +1,19 @@
 <template>
     <div>
-        Detail
+        <h2 class="display-2">{{book.attributes.name}}</h2>
+
+        <img :src="'http://localhost:1337' +  book.attributes.image.data.attributes.formats.large.url" :alt="book.attributes.image.data.attributes.alternativeText" />
+        <p>{{book.attributes.description}}</p>
+        <p>KES {{book.attributes.price}}</p>
+        
 
 
         <Modal>
             <template #title>
-                Billing Address
+                Billing Details
             </template>
             <template #body>
-                <Checkout :book="this.book"/>
+                <Checkout :book_id="book.id" :book="book.attributes" />
             </template>
         </Modal>
 
@@ -20,33 +25,26 @@
 
     </div>
 </template>
-    <script>
-    
-    
-    
-    import Modal from "./Modal.vue";
-    import Checkout from "./Checkout.vue";
-    export default {
-        name: "DetailComponent",
-        components: { Modal, Checkout },
-        data() {
-            return {
-                book: null
-            }
-        },
-        created() {
-            this.loadBook(this.$route.params.id);
-        },
-        methods: {
-            async loadBook(id) {
-                try {
-                    this.book = "Hello";
-                    console.log(id);
-                } catch (error) {
-                    console.log(error);
-                }
-            }
+<script>
+
+
+import { mapActions } from "vuex";
+import Modal from "./Modal.vue";
+import Checkout from "./Checkout.vue";
+export default {
+    name: "DetailComponent",
+    components: { Modal, Checkout },
+    computed: {
+        book() {
+            return this.$store.getters.getBook || {};
         }
+    },
+    created() {
+        this.listBook(this.$route.params.id);
+    },
+    methods: {
+        ...mapActions(["listBook"]),
     }
-    
-    </script>
+}
+
+</script>
