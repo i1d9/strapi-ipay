@@ -18,7 +18,7 @@ module.exports = {
    * This gives you an opportunity to set up your data model,
    * run jobs, or perform some special logic.
    */
-  async bootstrap(/*{ strapi }*/) {
+  async bootstrap({ strapi }) {
 
 
     let iPayTransact = "https://apis.ipayafrica.com/payments/v2/transact";
@@ -58,7 +58,7 @@ module.exports = {
 
       //creating hmac object 
       let hash = crypto.createHmac(iPayAlgorithm, iPaySecret).update(hashCode).digest("hex");
-      
+
       iPayData['hash'] = hash;
       return iPayData;
 
@@ -71,7 +71,7 @@ module.exports = {
       try {
 
 
-        
+
         let response = await axios({
           method: 'post',
           url: iPayTransact,
@@ -86,20 +86,20 @@ module.exports = {
         console.log(response.data)
         return response.data;
       } catch (e) {
-    
+
         return null;
       }
     }
-    
 
-  
+
+
 
     async function sendSTK(order_id, customer_telephone, customer_email, amount) {
       try {
 
         let init_response = await initateSTKTransaction(order_id, customer_telephone, customer_email, amount);
 
-        
+
         if (init_response.status == 1) {
           console.log(init_response)
 
@@ -113,7 +113,6 @@ module.exports = {
             hash: hash
           }
 
-          console.log(JSON.stringify(stkData))
 
           let response = await axios({
             method: 'post',
@@ -124,10 +123,9 @@ module.exports = {
             }
           });
 
-          
           return response.data;
-        }  
-        
+        }
+
         return null;
 
 
@@ -164,11 +162,22 @@ module.exports = {
 
         console.log("An error occurred while looking for the transaction.");
         console.log(error);
+        return null
       }
 
 
 
     }
+    
+    
+
+
+
+    strapi.ipay = {
+      checkTransactionStatus,
+      sendSTK, 
+    }
+
 
 
   },

@@ -4,27 +4,19 @@
   "info": {
     "singularName": "sale",
     "pluralName": "sales",
-    "displayName": "Sale"
+    "displayName": "Sale",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
-    "first_name": {
-      "type": "string"
-    },
-    "last_name": {
-      "type": "string"
-    },
     "book": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::book.book",
       "inversedBy": "sales"
-    },
-    "email": {
-      "type": "string"
     },
     "phone": {
       "type": "string"
@@ -32,11 +24,22 @@
     "receipt": {
       "type": "string"
     },
-    "sales_ref": {
-      "type": "string"
+    "ref": {
+      "type": "string",
+      "unique": true
     },
     "total": {
       "type": "integer"
+    },
+    "buyer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "sales"
+    },
+    "status": {
+      "type": "string",
+      "default": "pending"
     }
   }
 }
