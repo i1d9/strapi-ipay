@@ -92,8 +92,8 @@ const dataStore = {
 
             const { data } = await axios
                 .get(`http://localhost:1337/api/sales/${sale_id}`, {
-                   
-                headers: {
+
+                    headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${state.auth.token}`
                     }
@@ -107,8 +107,8 @@ const dataStore = {
 
             const { data } = await axios
                 .get(`http://localhost:1337/api/sales/${sale_id}/status`, {
-                  
-                headers: {
+
+                    headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${state.auth.token}`
                     }
