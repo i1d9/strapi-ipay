@@ -18,7 +18,7 @@ module.exports = {
    * This gives you an opportunity to set up your data model,
    * run jobs, or perform some special logic.
    */
-  async bootstrap({ strapi }) {
+    async bootstrap({ strapi }) {
 
 
     let iPayTransact = "https://apis.ipayafrica.com/payments/v2/transact";
@@ -177,8 +177,6 @@ module.exports = {
       checkTransactionStatus,
       sendSTK, 
     }
-
-
 
   },
 };
