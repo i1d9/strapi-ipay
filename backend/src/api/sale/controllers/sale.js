@@ -96,7 +96,6 @@ module.exports = createCoreController('api::sale.sale', ({ strapi }) => ({
     async checkStatus(ctx) {
         const { id } = ctx.params;
 
-
         let sale = await strapi.entityService.findOne('api::sale.sale', id, {
             populate: {
                 buyer: {
