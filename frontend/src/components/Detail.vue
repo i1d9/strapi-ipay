@@ -6,8 +6,6 @@
         <p>{{book.attributes.description}}</p>
         <p>KES {{book.attributes.price}}</p>
         
-
-
         <Modal>
             <template #title>
                 Billing Details
