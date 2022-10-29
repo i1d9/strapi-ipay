@@ -1,6 +1,7 @@
 <template>
     <div class="container my-5">
-        <form @submit.prevent="submit" class="d-flex flex-column">
+        <form autocomplete="off" @submit.prevent="submit" class="d-flex flex-column">
+            <input autocomplete="false" name="hidden" type="text" style="display:none;">
 
             <div class="mb-3">
                 <input type="email" class="form-control" placeholder="Email Address" name="email"

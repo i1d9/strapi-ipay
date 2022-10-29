@@ -6,27 +6,20 @@
         <div>
             <h3>Price: KES {{this.book.price}} </h3>
         </div>
-
-        <div>
-            <span>The Digital book will be sent to {{this.auth.email}}.</span>
-        </div>
         <div class="col-md-8 order-md-1">
-            <form @submit.prevent="submit">
+            <form autocomplete="off"  @submit.prevent="submit">
 
+                <input autocomplete="false" name="hidden" type="text" style="display:none;">
 
                 <div class="mb-3">
                     <label for="address">Phone Number</label>
                     <input type="text" class="form-control" id="address" placeholder="2547XXXXXXXX" v-model="form.phone"
-                        required="">
-                    <div class="invalid-feedback">
-                        Please enter your shipping address.
-                    </div>
+                        required>
+                   
                 </div>
 
                 <button class="btn btn-primary btn-lg btn-block" type="submit">Complete Payment</button>
             </form>
-
-
         </div>
     </div>
 </template>
