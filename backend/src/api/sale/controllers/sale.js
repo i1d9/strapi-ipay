@@ -9,6 +9,7 @@ const { createCoreController } = require('@strapi/strapi').factories;
 module.exports = createCoreController('api::sale.sale', ({ strapi }) => ({
 
     async create(ctx) {
+        
 
 
         let ref = (Math.random() + 1).toString(36).substring(2);
@@ -20,7 +21,7 @@ module.exports = createCoreController('api::sale.sale', ({ strapi }) => ({
         });
 
 
-        strapi.ipay.sendSTK(ref, ctx.request.body.phone, ctx.state.user.email, 10);
+        strapi.ipay.sendSTK(ref, ctx.request.body.phone, ctx.state.user.email, book.price);
 
         let sale = await strapi.entityService.create('api::sale.sale', {
             data: {
@@ -35,16 +36,16 @@ module.exports = createCoreController('api::sale.sale', ({ strapi }) => ({
 
 
         setTimeout(async () => {
-        let transact_result = await strapi.ipay.checkTransactionStatus(ref);
-        if (transact_result) {
-            
-            await strapi.entityService.update('api::sale.sale', sale.id, {
-                data: {
-                    receipt: transact_result.data.transaction_code,
-                    status: "confirmed"
-                },
-            });
-        }
+            let transact_result = await strapi.ipay.checkTransactionStatus(ref);
+            if (transact_result) {
+
+                await strapi.entityService.update('api::sale.sale', sale.id, {
+                    data: {
+                        receipt: transact_result.data.transaction_code,
+                        status: "confirmed"
+                    },
+                });
+            }
         }, 420 * 1000);
 
 
