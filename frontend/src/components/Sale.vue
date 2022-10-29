@@ -3,20 +3,15 @@
         <div>
             <h1>{{book.name}}</h1>
             <h2>{{sale.status}}</h2>
-
             <img :src="'http://localhost:1337' +  book.image.formats.large.url" :alt="book.image.alternativeText" />
-            <p>{{book.description}}</p>
-       
+            <p>{{book.description}}</p>       
             <span v-if="sale.status == 'confirmed'">
                 <a :href="'http://localhost:1337' + book.file.url">Download</a>
             </span>
             <button @click="refreshStatus" class="btn btn-primary" type="button" v-else>
                 Check Status
             </button>
-
-            <button @click="refreshStatus" class="btn btn-primary" type="button">
-                Check Status
-            </button>
+            
         </div>
     </div>
 </template>
