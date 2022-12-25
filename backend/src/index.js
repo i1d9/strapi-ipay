@@ -26,8 +26,8 @@ module.exports = {
     let iPayTransactMobile = "https://apis.ipayafrica.com/payments/v2/transact";
     let iPayQueryTransaction = "https://apis.ipayafrica.com/payments/v2/transaction/search";
     let iPayRefund = "https://apis.ipayafrica.com/payments/v2/transaction/refund";
-    let iPaySecret = strapi.config.get('server.ipaysecret', 'demoCHANGED');
-    let iPayVid = strapi.config.get('server.ipayvid', 'demo');
+    let iPaySecret = strapi.config.get('server.iPaySecret', 'demoCHANGED');
+    let iPayVid = strapi.config.get('server.iPayVid', 'demo');
     let iPayAlgorithm = "sha256"
 
     function prepare_stk_data(order_id, amount, customer_phone, customer_email, customer_notifications = 0) {

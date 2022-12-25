@@ -4,7 +4,7 @@ module.exports = ({ env }) => ({
   app: {
     keys: env.array('APP_KEYS'),
   },
-  ipaykey: env('iPayKey'),
-  ipayvid: env('iPayVid'),
-  ipaysecret: env('iPaySecret'),
+  iPayKey: env('iPayKey'),
+  iPayVid: env('iPayVid'),
+  iPaySecret: env('iPaySecret'),
 });
